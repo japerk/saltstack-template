@@ -1,0 +1,6 @@
+# less shows colors, salt outputs colors
+alias less='less -r'
+alias salt='salt --force-color'
+alias salt-cloud='salt-cloud --force-color'
+alias salt-run='salt-run --force-color'
+alias salt-key='salt-key --force-color'

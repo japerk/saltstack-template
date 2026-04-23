@@ -1,0 +1,9 @@
+/var/log/supervisor/supervisord.log {
+	weekly
+	size 50M
+	missingok
+	rotate 5
+	compress
+	notifempty
+	create 644 root root
+}

@@ -1,0 +1,2 @@
+set autoindent noexpandtab tabstop=4 shiftwidth=4 number cursorline
+" See for more ideas https://www.freecodecamp.org/news/vimrc-configuration-guide-customize-your-vim-editor/
