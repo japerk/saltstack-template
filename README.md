@@ -4,6 +4,33 @@
 
 ---
 
+# Key features of this template
+
+- Opinionated Salt orchestration in `salt/top.sls`:
+  - `bootstrap`
+  - `etc`
+  - `iptables.salt_master`
+  - `ssh`
+- Bootstrap baseline:
+  - common system and Python packages
+  - `chrony` + UTC timezone
+  - SSH service enabled
+  - root shell/Vim defaults (`.bash_aliases`, `.vimrc`)
+- Security hardening:
+  - fail2ban with SSH jail
+  - SSH config management in `/etc/ssh/sshd_config.d/sshd.conf`
+  - iptables rules for SSH + rsyslog UDP handling
+  - persistent firewall rules via `iptables-persistent`
+  - UFW disable guard to prevent rule flush conflicts
+- Ops hygiene:
+  - unattended upgrades + auto-upgrades
+  - rsyslog config management
+  - logrotate policies for rsyslog/supervisor plus optional pillar extras
+  - swap file provisioning (`/mnt/swap`)
+- Pillar-driven host/network setup:
+  - hostname and `/etc/hosts` management
+  - easy customization of SSH/network values per host
+
 # Salt Setup
 
 As `root` do the following:
@@ -30,3 +57,43 @@ master: 127.0.0.1
 14. `salt MINION_NAME pkg.upgrade`
 15. `salt MINION_NAME shadow.lock_password root`
 16. `reboot`
+
+---
+
+# Common pillar updates before first run
+
+When you get to step 10 (`Create/update pillar file & ./rsync.sh`), these are the most common values to set in `pillar/minion.sls`:
+
+- `network:public_iface`: set to your host's public interface (for example `ens3` instead of default `eth0`)
+- `network:private_iface`: set if you use a dedicated private interface, otherwise keep `lo`
+- `network:hostname`: your real machine hostname
+- `network:hosts`: add host-to-IP mappings used by `/etc/hosts` and Salt firewall allow rules
+- `salt:master_ip`: set explicitly if Salt master traffic should bind/route via a non-default address
+- `ssh:port`: change from `22` if you run SSH on a custom port
+- `ssh:listen_address`: restrict SSH bind address as needed (default is `0.0.0.0`)
+- `ssh:allow_users`: add allowed SSH users beyond the default template user
+- `etc:logrotate`: optional list of extra files in `salt/etc/logrotate.d/` to deploy
+
+Example starter shape:
+
+```yaml
+network:
+  public_iface: ens3
+  private_iface: lo
+  hostname: my-host
+  hosts:
+    my-host: 127.0.0.1
+    app-1: 10.0.0.11
+
+salt:
+  master_ip: 127.0.0.1
+
+ssh:
+  port: 22
+  listen_address: 0.0.0.0
+  allow_users:
+    - deploy
+
+etc:
+  logrotate: []
+```

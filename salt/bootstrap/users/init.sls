@@ -12,6 +12,4 @@ root_vimrc:
     - name: /root/.vimrc
     - source: salt://bootstrap/files/vimrc
     - mode: 644
-    - user: jacob
-    - require:
-      - user: jacob
+    - user: root
